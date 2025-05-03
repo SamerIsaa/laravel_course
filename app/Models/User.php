@@ -43,7 +43,30 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function posts(){
-        return $this->hasMany(Post::class);
+    // single user has many posts
+
+    public function posts()
+    {
+        // any hasMany must return Collect of many item's or collect of 1 item
+        // [post1] , or [post1, p2,p3]
+        return $this->hasMany(Post::class , 'user_id' , 'id');
     }
+
+
+    // user has one address
+
+    public function address()
+    {
+        // return single object
+        return $this->hasOne(Address::class , 'user_id','id');
+    }
+
+    // relation to comments model
+
+    public function comments()
+    {
+        return $this->hasManyThrough(Comment::class , Post::class,'user_id','post_id');
+    }
+
+
 }

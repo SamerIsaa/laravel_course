@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,3 +25,21 @@ Route::get('/page2', function () {
     $color= "#123483";
     return view('panel.samer' , compact('title' , 'color'));
 });
+
+//
+//Route::get('/fill-users-materials', function () {
+//   $users = \App\Models\User::query()->get();
+//    foreach ($users as $user) {
+//        $rand = rand(0,4);
+//        $materials = \App\Models\Material::query()->take($rand)->inRandomOrder()->get();
+//        foreach ($materials as $material) {
+//            DB::table('users_materials')->insert([
+//                'user_id' => $user->id,
+//                'material_id' => $material->id,
+//            ]);
+//        }
+//    }
+//
+//    dd('done');
+//
+//});

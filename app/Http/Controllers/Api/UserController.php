@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Address;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -125,6 +127,45 @@ class UserController extends Controller
 
     public function myData()
     {
-        dd(auth('api')->user() , \request()->user());
+        $user = auth('api')->user();
+        $user->load('posts');
+//        $user->load('address');
+//dd($user->address);
+        return $this->api_response(true, 'Fetched successfully', [
+            'user' => $user,
+        ]);
+    }
+
+    public function findPost($id)
+    {
+        $post = Post::query()->with(['user'])->find($id);
+        if (!isset($post)){
+            return $this->api_response(false , "Post Not Found", [], 404);
+        }
+        $user = $post->user;
+        dd($user);
+
+    }
+    public function findAddress($id)
+    {
+        $address = Address::query()->with(['user'])->find($id);
+        if (!isset($address)){
+            return $this->api_response(false , "Address Not Found", [], 404);
+        }
+        $user = $address->user;
+        dd($user);
+
+    }
+    public function loadUserComments()
+    {
+        $user = auth('api')->user();
+        dd($user->comments);
+//        $address = Address::query()->with(['user'])->find($id);
+//        if (!isset($address)){
+//            return $this->api_response(false , "Address Not Found", [], 404);
+//        }
+//        $user = $address->user;
+//        dd($user);
+
     }
 }

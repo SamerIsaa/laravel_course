@@ -14,18 +14,25 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('login' , [UserController::class , 'login']);
-Route::post('logout' , [UserController::class , 'logout'])->middleware('auth:api');
+Route::post('login', [UserController::class, 'login']);
+Route::post('logout', [UserController::class, 'logout'])->middleware('auth:api');
 
 
-Route::group(['prefix' => 'users'] , function () {
-    Route::get('all' , [UserController::class , 'index']);
-    Route::get('{id}/show' , [UserController::class , 'show']);
-    Route::post('/' , [UserController::class , 'store']);
-    Route::put('{id}/update' , [UserController::class , 'update']);
-    Route::delete('{id}/delete' , [UserController::class , 'delete']);
+Route::group(['prefix' => 'users'], function () {
+    Route::get('all', [UserController::class, 'index']);
+    Route::get('{id}/show', [UserController::class, 'show']);
+    Route::post('/', [UserController::class, 'store']);
+    Route::put('{id}/update', [UserController::class, 'update']);
+    Route::delete('{id}/delete', [UserController::class, 'delete']);
 });
 
 
-Route::get('my-data' , [UserController::class , 'myData'])->middleware('auth:api');
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::get('my-data', [UserController::class, 'myData']);
+    Route::get('fetch-post/{id}', [UserController::class, 'findPost']);
+    Route::get('fetch-address/{id}', [UserController::class, 'findAddress']);
+    Route::get('load-comments', [UserController::class, 'loadUserComments']);
+
+});
+
 
