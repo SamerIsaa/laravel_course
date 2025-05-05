@@ -33,6 +33,11 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('fetch-address/{id}', [UserController::class, 'findAddress']);
     Route::get('load-comments', [UserController::class, 'loadUserComments']);
 
+
 });
+
+
+
+Route::get('fetch-users-with-materials', [UserController::class, 'fetchUsersWithMaterials']);
 
 

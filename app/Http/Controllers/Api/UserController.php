@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
+use App\Models\Material;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -139,23 +140,25 @@ class UserController extends Controller
     public function findPost($id)
     {
         $post = Post::query()->with(['user'])->find($id);
-        if (!isset($post)){
-            return $this->api_response(false , "Post Not Found", [], 404);
+        if (!isset($post)) {
+            return $this->api_response(false, "Post Not Found", [], 404);
         }
         $user = $post->user;
         dd($user);
 
     }
+
     public function findAddress($id)
     {
         $address = Address::query()->with(['user'])->find($id);
-        if (!isset($address)){
-            return $this->api_response(false , "Address Not Found", [], 404);
+        if (!isset($address)) {
+            return $this->api_response(false, "Address Not Found", [], 404);
         }
         $user = $address->user;
         dd($user);
 
     }
+
     public function loadUserComments()
     {
         $user = auth('api')->user();
@@ -167,5 +170,26 @@ class UserController extends Controller
 //        $user = $address->user;
 //        dd($user);
 
+    }
+
+
+    public function fetchUsersWithMaterials()
+    {
+
+        // function to fetch uses with or without relation whereHas() , with() , whereDoesntHave()
+
+        $users = User::query()
+            ->whereDoesntHave('materials' , function ($query) {
+                $query->where('id', 1);
+            })
+//            ->whereHas('materials')
+            //            ->whereHas('materials' , function ($query) {
+//                $query->where('id', 1);
+//            })
+            ->get();
+        return $users;
+
+//        $materials = Material::query()->withCount(['users'])->get();
+//        return $materials;
     }
 }

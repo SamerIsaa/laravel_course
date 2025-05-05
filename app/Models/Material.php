@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Material extends Model
 {
-    use HasFactory;
+    protected $fillable = ['name'];
+
+
+    // material has many users
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'users_materials', 'material_id', 'user_id');
+    }
 }

@@ -49,7 +49,7 @@ class User extends Authenticatable
     {
         // any hasMany must return Collect of many item's or collect of 1 item
         // [post1] , or [post1, p2,p3]
-        return $this->hasMany(Post::class , 'user_id' , 'id');
+        return $this->hasMany(Post::class, 'user_id', 'id');
     }
 
 
@@ -58,15 +58,22 @@ class User extends Authenticatable
     public function address()
     {
         // return single object
-        return $this->hasOne(Address::class , 'user_id','id');
+        return $this->hasOne(Address::class, 'user_id', 'id');
     }
 
     // relation to comments model
 
     public function comments()
     {
-        return $this->hasManyThrough(Comment::class , Post::class,'user_id','post_id');
+        return $this->hasManyThrough(Comment::class, Post::class, 'user_id', 'post_id');
     }
 
+
+    // user has many materials (belongsToMany())
+
+    public function materials()
+    {
+        return $this->belongsToMany(Material::class, 'users_materials', 'user_id', 'material_id');
+    }
 
 }
