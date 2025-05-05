@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\UserRequest;
 use App\Models\Address;
 use App\Models\Material;
 use App\Models\Post;
@@ -28,21 +29,8 @@ class UserController extends Controller
         return $this->api_response(true, 'Fetched successfully', $data);
     }
 
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8'
-        ]);
-
-        if ($validator->fails()) {
-            $res = [
-                'errors' => $validator->errors(),
-            ];
-            return $this->api_response(false, 'Validation Error', $res, 422);
-        }
-
         $data = $request->all();
         $data['password'] = Hash::make($data['password']);
         $user = User::query()->create($data);
@@ -50,7 +38,7 @@ class UserController extends Controller
 
     }
 
-    public function update($id, Request $request)
+    public function update($id, UserRequest $request)
     {
         $user = User::query()->find($id);
         if (!isset($user)) {
@@ -58,15 +46,7 @@ class UserController extends Controller
         }
 
         if (isset($user)) {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                "email" => 'required|unique:users,email,' . $user->id,
-                "password" => 'required|min:8'
-            ]);
-            if ($validator->fails()) {
-                return $this->api_response(false, 'Validation error', ['errors' => $validator->errors()], 422);
-            }
-            $data = $validator->validated();
+            $data = $request->all();
             $data['password'] = Hash::make($data['password']);
             $user->update($data);
             $res['user'] = $user;
