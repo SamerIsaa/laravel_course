@@ -24,7 +24,7 @@
                         <div class="card card-custom bg-gray-100 card-stretch gutter-b">
                             <!--begin::Header-->
                             <div class="card-header border-0 bg-danger py-5">
-                                <h3 class="card-title font-weight-bolder text-white">{{ __('auth.failed') }}</h3>
+                                <h3 class="card-title font-weight-bolder text-white">{{ $blog->title }}</h3>
                                 <div class="card-toolbar">
                                     <div class="dropdown dropdown-inline">
                                         <a href="#"

@@ -22,6 +22,7 @@ Route::group([
     Route::get('/', function () {
         $data['title'] = "dashboard";
         $data['range'] = range(10, 1000 , 50);
+        $data['blog'] = \App\Models\Blog::query()->first();
         return view('panel.index',$data);
     });
 
