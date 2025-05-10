@@ -24,6 +24,10 @@ Route::group(['prefix' => 'users'], function () {
     Route::post('/', [UserController::class, 'store']);
     Route::put('{id}/update', [UserController::class, 'update']);
     Route::delete('{id}/delete', [UserController::class, 'delete']);
+
+    Route::post('send-notifications', [UserController::class, 'sendNotifications']);
+    Route::post('{id}/get-notifications', [UserController::class, 'getUserNotification']);
+    Route::post('{id}/n/{nid}/read', [UserController::class, 'markNotificationAsRead']);;
 });
 
 
@@ -35,7 +39,6 @@ Route::group(['middleware' => 'auth:api'], function () {
 
 
 });
-
 
 
 Route::get('fetch-users-with-materials', [UserController::class, 'fetchUsersWithMaterials']);

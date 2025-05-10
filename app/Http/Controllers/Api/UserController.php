@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UserRequest;
+use App\Http\Resources\Api\NotificationResource;
 use App\Http\Resources\Api\UserResource;
 use App\Models\Address;
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\GeneralNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -184,5 +187,45 @@ class UserController extends Controller
 
 //        $materials = Material::query()->withCount(['users'])->get();
 //        return $materials;
+    }
+
+    public function sendNotifications(Request $request)
+    {
+
+        $users = User::query()->get();
+
+        $newGeneralNotification = new GeneralNotification($request->get('title'), $request->get('content'), ['database']);
+
+
+        Notification::send($users, $newGeneralNotification);
+
+        return $this->api_response(true, 'Notification Sent Successfully');
+    }
+
+    public function getUserNotification($id)
+    {
+        $user = User::query()->find($id);
+
+        if (!isset($user)) {
+            return $this->api_response(false, 'User Not Found', [], 404);
+        }
+        $ns = $user->notifications()->paginate(5);
+        return $this->api_response(true, 'Fetched successfully', [
+            'notifications' => NotificationResource::collection($ns),
+            'pagination' => $ns->links()
+        ]);
+    }
+
+    public function markNotificationAsRead($id , $nid)
+    {
+        $user = User::query()->find($id);
+
+        if (!isset($user)) {
+            return $this->api_response(false, 'User Not Found', [], 404);
+        }
+
+        $notification = $user->notifications()->where('id', $nid)->first();
+        $notification->markAsRead();
+        return $this->api_response(true, 'Notification marked as read');
     }
 }
