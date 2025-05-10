@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UserRequest;
+use App\Http\Resources\Api\UserResource;
 use App\Models\Address;
-use App\Models\Material;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -16,16 +16,20 @@ class UserController extends Controller
 {
     public function index()
     {
-        $data['users'] = User::query()->select(['id', 'name', 'email'])->get();
+        $users = User::query()->select(['id', 'name', 'email'])->get();
+        $data['users'] = UserResource::collection($users);
         return $this->api_response(true, 'Fetched successfully', $data);
     }
 
     public function show($id)
     {
-        $data['user'] = User::query()->find($id);
-        if (!isset($data['user'])) {
+        $user = User::query()->find($id);
+
+
+        if (!isset($user)) {
             return $this->api_response(false, 'User Not Found', [], 404);
         }
+        $data['user'] = new UserResource($user);
         return $this->api_response(true, 'Fetched successfully', $data);
     }
 
@@ -159,15 +163,24 @@ class UserController extends Controller
         // function to fetch uses with or without relation whereHas() , with() , whereDoesntHave()
 
         $users = User::query()
-            ->whereDoesntHave('materials' , function ($query) {
-                $query->where('id', 1);
-            })
+            ->whereDoesntHave('materials')
 //            ->whereHas('materials')
             //            ->whereHas('materials' , function ($query) {
 //                $query->where('id', 1);
 //            })
+//                ->where('id',0)
             ->get();
-        return $users;
+        //            ->map(function ($user) {
+//                return [
+//                    'id' => $user['id'],
+//                    'text' => $user['name'] . ' | ' . $user['email']
+//                ];
+//            })->all();
+
+//
+
+        $res['users'] = (UserResource::collection($users));
+        return $this->api_response(true, 'Fetched successfully', $res);
 
 //        $materials = Material::query()->withCount(['users'])->get();
 //        return $materials;
