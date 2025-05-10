@@ -1,4 +1,4 @@
-@extends('panel.layout.master')
+@extends('panel.layout.master' , ['title' => app()->getLocale()])
 
 @section('content')
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -9,6 +9,7 @@
         {{--        @for($i = 0 ; $i < count($range) ; $i++)--}}
         {{--            {{ $range[$i] }}--}}
         {{--        @endfor--}}
+
 
 
         <!--begin::Entry-->
@@ -23,7 +24,7 @@
                         <div class="card card-custom bg-gray-100 card-stretch gutter-b">
                             <!--begin::Header-->
                             <div class="card-header border-0 bg-danger py-5">
-                                <h3 class="card-title font-weight-bolder text-white">Sales Stat</h3>
+                                <h3 class="card-title font-weight-bolder text-white">{{ __('auth.failed') }}</h3>
                                 <div class="card-toolbar">
                                     <div class="dropdown dropdown-inline">
                                         <a href="#"

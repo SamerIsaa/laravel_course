@@ -14,17 +14,40 @@ use Illuminate\Support\Facades\Route;
 |
 //*/
 
-Route::get('/', function () {
-    $data['title'] = "dashboard";
-    $data['range'] = range(10, 1000 , 50);
-    return view('panel.index',$data);
+Route::group([
+    'prefix' => LaravelLocalization::setLocale(),
+    'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]
+], function() {
+
+    Route::get('/', function () {
+        $data['title'] = "dashboard";
+        $data['range'] = range(10, 1000 , 50);
+        return view('panel.index',$data);
+    });
+
+
+    Route::get('/page2', function () {
+        $title = "page2";
+        $color= "#123483";
+        return view('panel.samer' , compact('title' , 'color'));
+    });
+
+    Route::get('/page3', function () {
+        echo app()->getLocale() . '<br>';
+        return __('auth.password');
+    });
+
+//    Route::get('/change-locale/{locale}', function ($locale) {
+////    ''
+//        app()->setLocale($locale);
+//
+//        echo app()->getLocale() . '<br>';
+//        return __('auth.password');
+//
+//    });
+
 });
 
-Route::get('/page2', function () {
-    $title = "page2";
-    $color= "#123483";
-    return view('panel.samer' , compact('title' , 'color'));
-});
 
 //
 //Route::get('/fill-users-materials', function () {
