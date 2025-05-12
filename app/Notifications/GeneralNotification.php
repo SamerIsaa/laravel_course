@@ -44,8 +44,7 @@ class GeneralNotification extends Notification
     {
         return (new MailMessage)
             ->subject($this->title)
-            ->text($this->content)//            ->($this->content)
-            ;
+            ->line($this->content);
     }
 
     /**

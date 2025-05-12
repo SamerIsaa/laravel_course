@@ -26,6 +26,7 @@ Route::group(['prefix' => 'users'], function () {
     Route::delete('{id}/delete', [UserController::class, 'delete']);
 
     Route::post('send-notifications', [UserController::class, 'sendNotifications']);
+    Route::post('send-mail', [UserController::class, 'sendMail']);
     Route::post('{id}/get-notifications', [UserController::class, 'getUserNotification']);
     Route::post('{id}/n/{nid}/read', [UserController::class, 'markNotificationAsRead']);;
 });
