@@ -31,4 +31,18 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'twillo' => [
+        'account_sid' => '',
+        'token' => '',
+        'my_phone' => ''
+    ],
+
+
+    "github" => [
+        'client_id' => '',
+        'client_secret' => '',
+        'redirect' => '/auth/callback?provider=github',
+    ]
+
+
 ];

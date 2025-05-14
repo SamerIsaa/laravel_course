@@ -27,6 +27,7 @@ Route::group(['prefix' => 'users'], function () {
 
     Route::post('send-notifications', [UserController::class, 'sendNotifications']);
     Route::post('send-mail', [UserController::class, 'sendMail']);
+    Route::post('send-sms', [UserController::class, 'sendSmsHandler']);
     Route::post('{id}/get-notifications', [UserController::class, 'getUserNotification']);
     Route::post('{id}/n/{nid}/read', [UserController::class, 'markNotificationAsRead']);;
 });

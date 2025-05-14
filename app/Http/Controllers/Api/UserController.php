@@ -6,12 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UserRequest;
 use App\Http\Resources\Api\NotificationResource;
 use App\Http\Resources\Api\UserResource;
+use App\Jobs\SendMailsToUsersJob;
 use App\Mail\SendWelcomeMail;
 use App\Models\Address;
 use App\Models\Post;
 use App\Models\User;
+use App\Models\UserOtp;
 use App\Notifications\GeneralNotification;
+use App\Traits\TwilloTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
@@ -19,6 +23,8 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    use TwilloTrait;
+
     public function index()
     {
         $users = User::query()->select(['id', 'name', 'email'])->get();
@@ -196,7 +202,7 @@ class UserController extends Controller
 
         $users = User::query()->get();
 
-        $newGeneralNotification = new GeneralNotification($request->get('title'), $request->get('content'), ['mail','database']);
+        $newGeneralNotification = new GeneralNotification($request->get('title'), $request->get('content'), ['mail', 'database']);
 
 
         Notification::send($users, $newGeneralNotification);
@@ -218,7 +224,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function markNotificationAsRead($id , $nid)
+    public function markNotificationAsRead($id, $nid)
     {
         $user = User::query()->find($id);
 
@@ -235,10 +241,58 @@ class UserController extends Controller
     {
         $users = User::query()->get();
 
+
+        $delay = 10;
         foreach ($users as $user) {
-            Mail::send(new SendWelcomeMail($user));
+
+            dispatch(new SendMailsToUsersJob($user))
+                ->onConnection('database')
+                ->delay($delay);
+            $delay += 5;
+        }
+
+        foreach ($users as $user) {
+
+            dispatch(new SendMailsToUsersJob($user))
+                ->onConnection('database')
+                ->onQueue('periority_1')
+                ->delay($delay);
+            $delay += 5;
+        }
+
+        foreach ($users as $user) {
+
+            dispatch(new SendMailsToUsersJob($user))
+                ->onConnection('database')
+                ->onQueue('periority_2')
+                ->delay($delay);
+            $delay += 5;
         }
 
         return $this->api_response(true, 'Mail Sent Successfully');
+    }
+
+    public function sendSmsHandler()
+    {
+
+        $user = User::query()->find(1);
+
+        $otp_object = UserOtp::query()->create([
+            'user_id' => $user->id,
+            'otp' => rand(100000, 999999),
+            'ip' => \request()->ip(),
+            'expired_at' => now()->addminutes(5)
+        ]);
+
+        $message = "Your OTP is : " . $otp_object->otp;
+        $this->sendSms($user->mobile, $message);
+
+//        $users = User::query()->get();
+//
+//        foreach ($users as $user) {
+//            Mail::send(new SendWelcomeMail($user));
+//        }
+
+        return $this->api_response(true, 'Sms Sent Successfully');
     }
 }
